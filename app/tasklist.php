@@ -4,9 +4,9 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 
-class Task extends Model
+class tasklist extends Model
 {
-    protected $fillable = ['content', 'status', 'user_id'];
+    protected $fillable = ['content'];
 
     /**
      * この投稿を所有するユーザ。（ Userモデルとの関係を定義）
@@ -16,4 +16,3 @@ class Task extends Model
         return $this->belongsTo(User::class);
     }
 }
-

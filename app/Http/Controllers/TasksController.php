@@ -15,11 +15,18 @@ class TasksController extends Controller
      */
     public function index()
     {
-        $tasks = Task::all();
+        $data = [];
+        if (\Auth::check()) {
+            $user = \Auth::user();
+        //$tasks = Task::all();
+        $tasks = $user->tasks()->orderBy('created_at', 'desc')->paginate(10);
         
-        return view('tasks.index',[
+        $data = [
+            'user' => $user,
             'tasks' => $tasks,
-            ]);
+            ];
+        }
+        return view('welcome',$data);
     }
 
     /**
@@ -48,13 +55,20 @@ class TasksController extends Controller
             'status' => 'required|max:10',
             'content' => 'required|max:255',
         ]);
-        
+        /*
         $task = new Task;
+        $task -> user_id = $request->user_id;
         $task -> status = $request->status;
         $task -> content = $request -> content;
         $task -> save();
-        
-        return redirect('/');
+        */
+        // 認証済みユーザ（閲覧者）の投稿として作成（リクエストされた値をもとに作成）
+        $request->user()->tasks()->create([
+            'content' => $request->content,
+            'user_id' => $request->user_id,
+            'status' => $request->status,
+        ]);
+        return back();
     }
 
     /**
@@ -100,11 +114,19 @@ class TasksController extends Controller
             'status' => 'required|max:10',
             'content' => 'required|max:255',
         ]);
-        
+        /*
         $task = Task::findOrFail($id);
+        $task->user_id = $request->user_id;
         $task->status = $request->status;
         $task->content = $request->content;
         $task->save();
+        */
+        
+        $request->user()->tasks()->create([
+            'content' => $request->content,
+            'user_id' => $request->user_id,
+            'status' => $request->status,
+        ]);
         
         return redirect('/');
     }
@@ -117,9 +139,16 @@ class TasksController extends Controller
      */
     public function destroy($id)
     {
+        /*
         $task = Task::findOrFail($id);
         
         $task->delete();
+        */
+        
+        $task= \App\Task::findOrFail($id);
+        if (\Auth::id() === $task->user_id) {
+            $task->delete();
+        }
         
         return redirect('/');
     }
