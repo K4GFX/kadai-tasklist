@@ -15,7 +15,7 @@ class TasksController extends Controller
      */
     public function index()
     {
-        //$data = [];
+        $data = [];
         if (\Auth::check()) {
             $user = \Auth::user();
             //$tasks = Task::all();
@@ -85,9 +85,13 @@ class TasksController extends Controller
     {
         $task = Task::findOrFail($id);
         
-        return view('tasks.show',[
+        if (\Auth::id() === $task->user_id) {
+            return view('tasks.show',[
             'task' => $task,
             ]);
+        }else{
+            return view('/');
+        }
     }
 
     /**
@@ -100,9 +104,13 @@ class TasksController extends Controller
     {
         $task = Task::findOrFail($id);
         
-        return view('tasks.edit',[
+        if (\Auth::id() === $task->user_id) {
+            return view('tasks.edit',[
             'task' => $task,
             ]);
+        }else{
+            return view('/');
+        }
     }
 
     /**
@@ -121,11 +129,12 @@ class TasksController extends Controller
         
         $task = Task::findOrFail($id);
         //$task->user_id = $request->user_id;
+        if (\Auth::id() === $task->user_id) {
         $task->user_id = $request->user()->id;
         $task->status = $request->status;
         $task->content = $request->content;
         $task->save();
-        
+        }
         /*$request->user()->tasks()->create([
             'content' => $request->content,
             'user_id' => $request->user_id,
@@ -144,9 +153,9 @@ class TasksController extends Controller
      */
     public function destroy($id)
     {
-        /*
-        $task = Task::findOrFail($id);
         
+        $task = Task::findOrFail($id);
+        /*
         $task->delete();
         */
         
