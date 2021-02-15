@@ -90,7 +90,7 @@ class TasksController extends Controller
             'task' => $task,
             ]);
         }else{
-            return view('/');
+            return redirect('/');
         }
     }
 
@@ -109,7 +109,7 @@ class TasksController extends Controller
             'task' => $task,
             ]);
         }else{
-            return view('/');
+            return redirect('/');
         }
     }
 
